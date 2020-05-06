@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundedLayout">
+        <attr name="round_radius" format="dimension" />
+        <attr name="round_radius_topleft" format="dimension" />
+        <attr name="round_radius_topright" format="dimension" />
+        <attr name="round_radius_bottomleft" format="dimension" />
+        <attr name="round_radius_bottomright" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="ClippingRoundedLayout">
+        <attr name="clip_round_radius" format="dimension" />
+        <attr name="clip_round_radius_topleft" format="dimension" />
+        <attr name="clip_round_radius_topright" format="dimension" />
+        <attr name="clip_round_radius_bottomleft" format="dimension" />
+        <attr name="clip_round_radius_bottomright" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="RoundedImageView">
+        <attr name="image_round_radius" format="dimension" />
+        <attr name="image_round_src" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="SimpleRecyclerView">
+        <attr name="list_orientation" format="enum">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+            <enum name="vertical_reversed" value="2" />
+            <enum name="horizontal_reversed" value="3" />
+        </attr>
+        <attr name="list_recycling_enabled" format="boolean" />
+    </declare-styleable>
+</resources>
