@@ -10,7 +10,7 @@ import java.io.File
  */
 abstract class PickMethod(open val selector: AbstractPictureSelect<*>) {
 
-    abstract fun onSelected(data: Intent?): File?
+    abstract fun onSelected(data: Intent?): ArrayList<File>?
 
     abstract fun select(): PickMethod
 

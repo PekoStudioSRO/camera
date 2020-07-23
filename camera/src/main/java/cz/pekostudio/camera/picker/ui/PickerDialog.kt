@@ -19,7 +19,12 @@ import cz.pekostudio.camera.picker.methods.GalleryMethod
 import cz.pekostudio.camera.picker.methods.PickMethod
 
 
-class PickerDialog(private val selector: AbstractPictureSelect<*>, private val config: Config, private val callback: (PickMethod) -> Unit) : Dialog(selector.activity) {
+class PickerDialog(
+    private val selector: AbstractPictureSelect<*>,
+    private val config: Config,
+    private val callback: (PickMethod) -> Unit,
+    val multiple: Boolean = false
+) : Dialog(selector.activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(config.layout)
@@ -31,11 +36,14 @@ class PickerDialog(private val selector: AbstractPictureSelect<*>, private val c
             dismiss()
         }
         findViewById<View>(R.id.gallery_button).setOnClickListener {
-            callback(GalleryMethod(selector))
+            callback(GalleryMethod(selector, multiple))
             dismiss()
         }
     }
 
-    data class Config(val layout: Int = R.layout.dialog_picker, val background: Int?= R.drawable.bg_dialog)
+    data class Config(
+        val layout: Int = R.layout.dialog_picker,
+        val background: Int?= R.drawable.bg_dialog
+    )
 
 }

@@ -23,8 +23,8 @@ class ExampleActivity : AppCompatActivity() {
         val image = findViewById<ImageView>(R.id.image)
 
         findViewById<View>(R.id.select).setOnClickListener {
-            pictureSelect.pickImage {
-                image.setImageBitmap(it)
+            pictureSelect.pickMultipleImages {
+                image.setImageBitmap(it[1])
             }
         }
     }

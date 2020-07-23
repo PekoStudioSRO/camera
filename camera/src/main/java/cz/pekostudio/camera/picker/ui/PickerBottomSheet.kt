@@ -18,7 +18,13 @@ import cz.pekostudio.camera.picker.methods.GalleryMethod
 import cz.pekostudio.camera.picker.methods.PickMethod
 
 
-class PickerBottomSheet(private val selector: AbstractPictureSelect<*>, private val config: Config, private val callback: (PickMethod) -> Unit) : BottomSheetDialogFragment() {
+class PickerBottomSheet(
+    private val selector: AbstractPictureSelect<*>,
+    private val config: Config,
+    private val callback: (PickMethod) -> Unit,
+    private val multiple: Boolean = false
+) : BottomSheetDialogFragment() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         config.style?.let {
@@ -26,14 +32,18 @@ class PickerBottomSheet(private val selector: AbstractPictureSelect<*>, private 
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(config.layout, container, false).apply {
             findViewById<View>(R.id.camera_button).setOnClickListener {
                 callback(CameraMethod(selector))
                 dismiss()
             }
             findViewById<View>(R.id.gallery_button).setOnClickListener {
-                callback(GalleryMethod(selector))
+                callback(GalleryMethod(selector, multiple))
                 dismiss()
             }
         }
@@ -44,7 +54,9 @@ class PickerBottomSheet(private val selector: AbstractPictureSelect<*>, private 
         dialog?.window?.findViewById<View>(com.google.android.material.R.id.container)?.run {
             fitsSystemWindows = false
             ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
-                ((this as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0).setPadding(0, 0, 0, insets.systemWindowInsetBottom)
+                ((this as ViewGroup).getChildAt(0) as ViewGroup)
+                    .getChildAt(0)
+                    .setPadding(0, 0, 0, insets.systemWindowInsetBottom)
                 insets.consumeSystemWindowInsets()
             }
             ViewCompat.requestApplyInsets(this)
@@ -54,6 +66,9 @@ class PickerBottomSheet(private val selector: AbstractPictureSelect<*>, private 
         }
     }
 
-    data class Config(val layout: Int = R.layout.dialog_picker, val style: Int? = R.style.DefaultBottomSheetTheme)
+    data class Config(
+        val layout: Int = R.layout.dialog_picker,
+        val style: Int? = R.style.DefaultBottomSheetTheme
+    )
 
 }

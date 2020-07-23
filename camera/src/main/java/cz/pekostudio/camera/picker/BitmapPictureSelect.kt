@@ -6,14 +6,20 @@ import android.graphics.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import androidx.exifinterface.media.ExifInterface
 import java.io.File
-import java.io.FileOutputStream
 
 /**
  * Created by Lukas Urbanek on 05/05/2020.
  */
-class BitmapPictureSelect(override val activity: AppCompatActivity, override val fileProvider: String) : AbstractPictureSelect<Bitmap>(activity, fileProvider) {
+class BitmapPictureSelect(
+    override val activity: AppCompatActivity,
+    override val fileProvider: String
+) : AbstractPictureSelect<Bitmap>(activity, fileProvider) {
 
-    override fun onResult(file: File): Bitmap = rotatedBitmapFromFile(file)
+    override fun onResult(files: ArrayList<File>) = ArrayList<Bitmap>().apply {
+        files.forEach {
+            add(rotatedBitmapFromFile(it))
+        }
+    }
 
     private fun getRotationFromExif(rotation: Int): Int {
         return when (rotation) {
@@ -36,7 +42,12 @@ class BitmapPictureSelect(override val activity: AppCompatActivity, override val
 
         Matrix().let { rotationMatrix ->
             rotationMatrix.postRotate(rotation.toFloat())
-            Bitmap.createBitmap(sourceBitmap, 0, 0, sourceBitmap.width, sourceBitmap.height, rotationMatrix, true).let { rotatedBitmap ->
+            Bitmap.createBitmap(
+                sourceBitmap,
+                0, 0,
+                sourceBitmap.width, sourceBitmap.height,
+                rotationMatrix, true
+            ).let { rotatedBitmap ->
                 return rotatedBitmap
             }
         }

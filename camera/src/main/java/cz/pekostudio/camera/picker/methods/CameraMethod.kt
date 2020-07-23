@@ -13,12 +13,12 @@ import java.io.File
  */
 class CameraMethod(override var selector: AbstractPictureSelect<*>) : PickMethod(selector) {
 
-    override fun onSelected(data: Intent?): File? {
+    override fun onSelected(data: Intent?): ArrayList<File>? {
         File(
             selector.activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             "last.jpg"
         ).let { file ->
-            return file
+            return arrayListOf(file)
         }
     }
 
