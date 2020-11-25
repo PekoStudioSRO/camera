@@ -23,8 +23,8 @@ class ExampleActivity : AppCompatActivity() {
         val image = findViewById<ImageView>(R.id.image)
 
         findViewById<View>(R.id.select).setOnClickListener {
-            pictureSelect.pickMultipleImages {
-                image.setImageBitmap(it[1])
+            pictureSelect.pickImage {
+                image.setImageBitmap(it)
             }
         }
     }
@@ -32,5 +32,14 @@ class ExampleActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         pictureSelect.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        pictureSelect.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

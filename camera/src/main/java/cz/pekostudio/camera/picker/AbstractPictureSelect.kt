@@ -2,11 +2,14 @@ package cz.pekostudio.camera.picker
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import cz.pekostudio.camera.picker.methods.PickMethod
 import cz.pekostudio.camera.picker.ui.PickerBottomSheet
 import cz.pekostudio.camera.picker.ui.PickerDialog
+import cz.pekostudio.camera.picker.utils.PermissionRequest
 import java.io.File
 
 /**
@@ -20,6 +23,8 @@ abstract class AbstractPictureSelect<R>(
     companion object {
         const val REQUEST_CODE = 828
     }
+
+    internal var permissionRequest: PermissionRequest? = null
 
     private var pickMethod: PickMethod? = null
     private var callback: ((result: ArrayList<R>) -> Unit)? = null
@@ -73,5 +78,30 @@ abstract class AbstractPictureSelect<R>(
     }
 
     abstract fun onResult(files: ArrayList<File>): ArrayList<R>
+
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+
+        fun isAllGranted(): Boolean {
+            grantResults.forEach {
+                if (it != PackageManager.PERMISSION_GRANTED) return false
+            }
+            return true
+        }
+
+        if (!isAllGranted()) {
+            Toast.makeText(activity, permissionRequest?.errorText, Toast.LENGTH_SHORT).show()
+            return
+        }
+        when (requestCode) {
+            permissionRequest?.requestCode -> {
+                permissionRequest?.block?.invoke()
+                permissionRequest = null
+            }
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 package cz.pekostudio.camera.picker.methods
 
 import android.content.Intent
+import android.net.Uri
 import android.provider.MediaStore
 import cz.pekostudio.camera.picker.AbstractPictureSelect
 import cz.pekostudio.camera.picker.FilePictureSelect
@@ -18,11 +19,19 @@ class GalleryMethod(
     override fun onSelected(data: Intent?): ArrayList<File>? {
         val bitmaps = ArrayList<String>()
 
-        val clipData = data?.clipData ?: return null
+        val uris = ArrayList<Uri>().apply {
+            data?.clipData?.let {
+                for (i in 0 until it.itemCount) {
+                    add(it.getItemAt(i).uri)
+                }
+            } ?: run {
+                data?.data?.let(::add)
+            }
+        }
 
-        for (i in 0 until clipData.itemCount) {
+        uris.forEach {
             selector.activity.contentResolver.query(
-                clipData.getItemAt(i).uri,
+                it,
                 arrayOf(MediaStore.Images.Media.DATA),
                 null,
                 null,
@@ -31,7 +40,7 @@ class GalleryMethod(
                 moveToFirst()
                 bitmaps.add(getString(getColumnIndex(MediaStore.Images.Media.DATA)))
                 close()
-            } ?: continue
+            }
         }
 
         return ArrayList<File>().apply {

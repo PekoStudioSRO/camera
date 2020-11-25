@@ -1,5 +1,6 @@
 package cz.pekostudio.camera.picker.ui
 
+import android.Manifest
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
@@ -17,13 +18,14 @@ import cz.pekostudio.camera.picker.AbstractPictureSelect
 import cz.pekostudio.camera.picker.methods.CameraMethod
 import cz.pekostudio.camera.picker.methods.GalleryMethod
 import cz.pekostudio.camera.picker.methods.PickMethod
+import cz.pekostudio.camera.picker.utils.requiredPermissions
 
 
 class PickerDialog(
     private val selector: AbstractPictureSelect<*>,
     private val config: Config,
     private val callback: (PickMethod) -> Unit,
-    val multiple: Boolean = false
+    private val multiple: Boolean = false
 ) : Dialog(selector.activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,18 +34,39 @@ class PickerDialog(
             window?.setBackgroundDrawableResource(it)
         }
         findViewById<View>(R.id.camera_button).setOnClickListener {
-            callback(CameraMethod(selector))
+            selector.activity.requiredPermissions(
+                config.doNotCheckPermissions,
+                config.permissionDeniedErrorMessage,
+                Manifest.permission.CAMERA
+            ) {
+                callback(CameraMethod(selector))
+                dismiss()
+            }?.let {
+                selector.permissionRequest = it
+            }
             dismiss()
         }
         findViewById<View>(R.id.gallery_button).setOnClickListener {
-            callback(GalleryMethod(selector, multiple))
+            selector.activity.requiredPermissions(
+                config.doNotCheckPermissions,
+                config.permissionDeniedErrorMessage,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) {
+                callback(GalleryMethod(selector, multiple))
+                dismiss()
+            }?.let {
+                selector.permissionRequest = it
+            }
             dismiss()
         }
     }
 
     data class Config(
         val layout: Int = R.layout.dialog_picker,
-        val background: Int?= R.drawable.bg_dialog
+        val background: Int?= R.drawable.bg_dialog,
+        val permissionDeniedErrorMessage: String = "Aplikace nemá oprávnění",
+        val doNotCheckPermissions: Boolean = false
     )
 
 }

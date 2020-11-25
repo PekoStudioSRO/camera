@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import cz.pekostudio.camera.picker.AbstractPictureSelect
 import cz.pekostudio.camera.picker.FilePictureSelect
+import cz.pekostudio.camera.picker.utils.hash
 import java.io.File
 
 /**
@@ -13,11 +14,12 @@ import java.io.File
  */
 class CameraMethod(override var selector: AbstractPictureSelect<*>) : PickMethod(selector) {
 
+    private val instanceId: String = System.currentTimeMillis().toString().hash()
+    private val imageFile = File(selector.activity.externalCacheDir, "camerapicture_${instanceId}.jpg")
+    
+
     override fun onSelected(data: Intent?): ArrayList<File>? {
-        File(
-            selector.activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-            "last.jpg"
-        ).let { file ->
+        imageFile.let { file ->
             return arrayListOf(file)
         }
     }
@@ -29,7 +31,7 @@ class CameraMethod(override var selector: AbstractPictureSelect<*>) : PickMethod
                     val photoURI: android.net.Uri = FileProvider.getUriForFile(
                         selector.activity,
                         selector.fileProvider,
-                        createImageFile()
+                        imageFile
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     androidx.core.app.ActivityCompat.startActivityForResult(
@@ -41,10 +43,5 @@ class CameraMethod(override var selector: AbstractPictureSelect<*>) : PickMethod
                 }
             }
         return this
-    }
-
-
-    private fun createImageFile(): File {
-        return File(selector.activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "last.jpg")
     }
 }
